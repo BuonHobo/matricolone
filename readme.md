@@ -13,7 +13,7 @@ folder
 └───data
     |   ASE_6.csv
     |   FDA_9.csv
-	|	...
+    |	...
 ```
 Dove **`nomi.csv`** è nel formato:
 ```
