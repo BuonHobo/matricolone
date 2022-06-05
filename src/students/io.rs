@@ -14,6 +14,7 @@ fn get_files() -> Vec<String> {
     let mut pathbuf=PathBuf::from(PATH);
     pathbuf.push(DATI);
 
+    
     if let Ok(dir) = fs::read_dir(pathbuf) {
         dir.filter_map(|entry| {
             if let Ok(entry) = entry {
@@ -42,11 +43,13 @@ fn read_file(path: &str) -> Result<Vec<Studente>, Error> {
     pathbuf.set_extension("csv");
     Ok(
         fs::read_to_string(pathbuf)?
-            .split("\r\n")
+            .split("\n")
             .skip(1)
             .filter_map(|line| match Studente::try_from((line, path)) {
                 Ok(stud) => Some(stud),
-                Err(_) => None,
+                Err(_) => {
+                    None
+                },
             })
             .collect(),
     )
@@ -84,7 +87,7 @@ fn merge_names(students: &mut HashMap<u32, Studente>) {
 
     if let Ok(content) = fs::read_to_string(pathbuf) {
         content
-            .split("\r\n")
+            .split("\n")
             .skip(1)
             .filter_map(|line| {
                 if let Some((matricola, nome)) = line.clone().split_once(",") {
