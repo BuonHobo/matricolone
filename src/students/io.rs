@@ -6,17 +6,17 @@ const RES: &str = "result";
 use super::Studente;
 use std::collections::HashMap;
 use std::fs;
-use std::path::PathBuf;
 use std::io::{Error, Write};
+use std::path::PathBuf;
 
-///Restituisce i file nella cartella superiore come OsString
+///Restituisce i file nella cartella ./data nel formato `ASE_6.csv`
 fn get_files() -> Vec<String> {
-    let mut pathbuf=PathBuf::from(PATH);
+    let mut pathbuf = PathBuf::from(PATH);
     pathbuf.push(DATI);
 
-    
     if let Ok(dir) = fs::read_dir(pathbuf) {
         dir.filter_map(|entry| {
+            //Prende solo i file e ignora le cartelle
             if let Ok(entry) = entry {
                 if let Ok(filetype) = entry.file_type() {
                     if filetype.is_file() {
@@ -32,35 +32,36 @@ fn get_files() -> Vec<String> {
     }
 }
 
+///Passa da una cosa del tipo `ASE_6.csv/ASE_6` ad `ASE`
 fn get_materia(string: &String) -> String {
     string.split("_").next().unwrap_or("N/A").to_owned()
 }
 
+///Legge un file e restituisce una lista di studenti basati sul formato `matricola,voto`
 fn read_file(path: &str) -> Result<Vec<Studente>, Error> {
-    let mut pathbuf=PathBuf::from(PATH);
+    let mut pathbuf = PathBuf::from(PATH);
     pathbuf.push(DATI);
     pathbuf.push(path);
     pathbuf.set_extension("csv");
-    Ok(
-        fs::read_to_string(pathbuf)?
-            .split("\n")
-            .map(|s|{
-                s.trim()
-            })
-            .skip(1)
-            .filter_map(|line| match Studente::try_from((line, path)) {
-                Ok(stud) => Some(stud),
-                Err(_) => {
-                    None
-                },
-            })
-            .collect(),
-    )
+
+    Ok(fs::read_to_string(pathbuf)?
+        .split("\n")
+        .map(|s| {
+            s.trim() //Il trim serve a sbarazzarsi di eventuali \r
+        })
+        .skip(1) //skippo l'header
+        .filter_map(|line| match Studente::try_from((line, path)) {
+            Ok(stud) => Some(stud),
+            Err(_) => None,
+        })
+        .collect())
 }
 
+///Prende gli studenti da ognuno dei csv e unisce i voti di quelli che hanno la stessa matricola
 fn merge_students() -> HashMap<u32, Studente> {
     let materie = get_materie();
 
+    //uso una mappa per essere più efficiente :))
     let mut students: HashMap<u32, Studente> = HashMap::new();
 
     for materia in &materie {
@@ -82,19 +83,17 @@ fn merge_students() -> HashMap<u32, Studente> {
     students
 }
 
+///Legge i nomi noti e li associa alle matricole già presenti
 fn merge_names(students: &mut HashMap<u32, Studente>) {
-
-    let mut pathbuf=PathBuf::from(PATH);
+    let mut pathbuf = PathBuf::from(PATH);
     pathbuf.push(NOMI);
     pathbuf.set_extension("csv");
 
     if let Ok(content) = fs::read_to_string(pathbuf) {
         content
             .split("\n")
-            .map(|s|{
-                s.trim()
-            })
-            .skip(1)
+            .map(|s| s.trim()) //per togliere l'eventuale \r
+            .skip(1) //skip header
             .filter_map(|line| {
                 if let Some((matricola, nome)) = line.clone().split_once(",") {
                     if let Ok(matricola) = matricola.parse() {
@@ -109,15 +108,17 @@ fn merge_names(students: &mut HashMap<u32, Studente>) {
                 } else {
                     let stud = Studente {
                         nome: Some(nome),
-                        matricola: matricola,
+                        matricola,
                         ..Default::default()
                     };
+                    //Se lo studente non è presente lo aggiungo comunque
                     students.insert(matricola, stud);
                 }
             })
     }
 }
 
+///Ottiene una lista completa degli studenti con nomi e voti
 pub fn get_students() -> Vec<Studente> {
     let mut students = merge_students();
     merge_names(&mut students);
@@ -125,6 +126,7 @@ pub fn get_students() -> Vec<Studente> {
     students.into_values().collect()
 }
 
+///Passa da cose del tipo `ASE_6.csv` ad `ASE_6`
 fn get_materie() -> Vec<String> {
     let materie: Vec<String> = get_files()
         .iter()
@@ -139,6 +141,7 @@ fn get_materie() -> Vec<String> {
     materie
 }
 
+///Salva gli studenti nel file
 pub fn store_students(students: &Vec<Studente>) -> Result<(), Error> {
     let materie: Vec<String> = get_materie().iter().map(|s| get_materia(s)).collect();
 
@@ -148,7 +151,7 @@ pub fn store_students(students: &Vec<Studente>) -> Result<(), Error> {
     }
     header += ",nome\n";
 
-    let mut pathbuf=PathBuf::from(PATH);
+    let mut pathbuf = PathBuf::from(PATH);
     pathbuf.push(RES);
     pathbuf.set_extension("csv");
 

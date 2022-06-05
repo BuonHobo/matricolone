@@ -10,6 +10,8 @@ pub struct Studente {
 }
 
 impl Studente {
+    ///Restituisce un punteggio che dipende dai voti ottenuti
+    ///e dai crediti di ogni esame
     fn get_score(&self) -> u64 {
         let mut acc = 0;
         for voto in self.voti.values() {
@@ -27,6 +29,8 @@ impl PartialOrd for Studente {
     }
 }
 impl Ord for Studente {
+    ///Sono uguali se hanno la stessa matricola,
+    ///altrimenti li ordina in base al punteggio
     fn cmp(&self, other: &Self) -> std::cmp::Ordering {
         if self.matricola == other.matricola {
             return Ordering::Equal;
@@ -50,11 +54,20 @@ pub struct InvalidStudent;
 impl TryFrom<(&str, &str)> for Studente {
     type Error = InvalidStudent;
 
+    ///Crea uno studente a partire da un'input del tipo ("matricola,voto","materia_cfu").
+    ///
+    ///Es: `Student::try_from(("559298,27","FIS_12"))`.
+    ///
+    ///Restituisce un errore del tipo `InvalidStudent` se i dati non sono nel formato giusto
     fn try_from((value, path): (&str, &str)) -> Result<Self, Self::Error> {
+        //Ricavo i dati necessari dai due parametri
         let (materia, cfu) = path.split_once("_").ok_or(InvalidStudent)?;
         let (matricola, voto) = value.split_once(",").ok_or(InvalidStudent)?;
+
+        //Converto da stringa nei valori che mi servono
         let matricola = matricola.parse().or(Err(InvalidStudent))?;
         let voto = voto.parse().or(Err(InvalidStudent))?;
+
         return Ok(Studente {
             nome: None,
             matricola,
