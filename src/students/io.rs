@@ -1,5 +1,5 @@
 const PATH: &str = ".";
-const DATI: &str = "data_real";
+const DATI: &str = "data";
 const NOMI: &str = "nomi";
 const RES: &str = "result";
 

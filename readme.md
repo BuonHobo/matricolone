@@ -1,7 +1,7 @@
 
 # Matricolone
 È un progetto molto prematuro e fatto in un paio di giornate, è senza pretese e purtroppo non esistono abbastanza dati per goderselo.
-L'eseguibile si trova nella cartella **`./`** e va a cercare i dati sugli esami nella cartella **`./data_real`** (nel formato *`matricola,voto`*, inoltre il nome dei file dev'essere nel formato **`./data_real/materia_cfu.csv`**). 
+L'eseguibile si trova nella cartella **`./`** e va a cercare i dati sugli esami nella cartella **`./data`** (nel formato *`matricola,voto`*, inoltre il nome dei file dev'essere nel formato **`./data/materia_cfu.csv`**). 
 I dati sui nomi invece si trovano in **`./nomi.csv`**.
 Il risultato è piazzato in **`./result.csv`**
 Un esempio è:
@@ -10,7 +10,7 @@ folder
 │   matricolone.exe
 │   nomi.csv    
 │	result.csv
-└───data_real
+└───data
     |   ASE_6.csv
     |   FDA_9.csv
 	|	...
