@@ -33,15 +33,17 @@ matricola,nome
 559320,18
 566835,29
 561883,22
+...
 ```
 Il risultato sarà del tipo:
 ```
->matricola ,ase  ,ee   ,fdi  ,tlc  ,nome
+matricola ,ase  ,ee   ,fdi  ,tlc  ,nome
 560124     ,30   ,31   ,31   ,31   ,
 560654     ,29   ,31   ,30   ,31   ,
 559320     ,29   ,29   ,31   ,31   ,Mariangela Verdi
 562335     ,28   ,28   ,31   ,31   ,
 559549     ,26   ,29   ,29   ,31   ,
+...
 ```
 
 ## Compilazione
