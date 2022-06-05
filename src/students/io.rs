@@ -44,6 +44,9 @@ fn read_file(path: &str) -> Result<Vec<Studente>, Error> {
     Ok(
         fs::read_to_string(pathbuf)?
             .split("\n")
+            .map(|s|{
+                s.trim()
+            })
             .skip(1)
             .filter_map(|line| match Studente::try_from((line, path)) {
                 Ok(stud) => Some(stud),
@@ -88,6 +91,9 @@ fn merge_names(students: &mut HashMap<u32, Studente>) {
     if let Ok(content) = fs::read_to_string(pathbuf) {
         content
             .split("\n")
+            .map(|s|{
+                s.trim()
+            })
             .skip(1)
             .filter_map(|line| {
                 if let Some((matricola, nome)) = line.clone().split_once(",") {
