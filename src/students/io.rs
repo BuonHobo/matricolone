@@ -4,7 +4,7 @@ const NOMI: &str = "nomi";
 const RES: &str = "result";
 
 use super::Studente;
-use std::collections::HashMap;
+use std::collections::{HashMap, HashSet};
 use std::fs;
 use std::io::{Error, Write};
 use std::path::PathBuf;
@@ -38,13 +38,14 @@ fn get_materia(string: &String) -> String {
 }
 
 ///Legge un file e restituisce una lista di studenti basati sul formato `matricola,voto`
-fn read_file(path: &str) -> Result<Vec<Studente>, Error> {
+fn read_file(path: &str) -> Result<HashSet<Studente>, Error> {
     let mut pathbuf = PathBuf::from(PATH);
     pathbuf.push(DATI);
     pathbuf.push(path);
     pathbuf.set_extension("csv");
 
-    Ok(fs::read_to_string(pathbuf)?
+
+    let studenti=fs::read_to_string(pathbuf)?
         .split("\n")
         .map(|s| {
             s.trim() //Il trim serve a sbarazzarsi di eventuali \r
@@ -54,7 +55,9 @@ fn read_file(path: &str) -> Result<Vec<Studente>, Error> {
             Ok(stud) => Some(stud),
             Err(_) => None,
         })
-        .collect())
+        .collect();
+
+    Ok(studenti)
 }
 
 ///Prende gli studenti da ognuno dei csv e unisce i voti di quelli che hanno la stessa matricola

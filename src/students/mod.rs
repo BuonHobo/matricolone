@@ -1,4 +1,4 @@
-use std::{cmp::Ordering, collections::HashMap};
+use std::{cmp::Ordering, collections::HashMap, hash::Hash};
 
 pub mod io;
 
@@ -48,6 +48,12 @@ impl PartialEq for Studente {
     }
 }
 impl Eq for Studente {}
+
+impl Hash for Studente{
+    fn hash<H: std::hash::Hasher>(&self, state: &mut H) {
+        self.matricola.hash(state);
+    }
+}
 
 pub struct InvalidStudent;
 
